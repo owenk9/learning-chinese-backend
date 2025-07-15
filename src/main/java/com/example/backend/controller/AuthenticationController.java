@@ -5,6 +5,7 @@ import com.example.backend.dto.request.LogoutRequest;
 import com.example.backend.dto.request.SignUpRequest;
 import com.example.backend.dto.request.TokenRefreshRequest;
 import com.example.backend.dto.response.JwtResponse;
+import com.example.backend.dto.response.MessageResponse;
 import com.example.backend.dto.response.TokenRefreshResponse;
 import com.example.backend.entity.RefreshToken;
 import com.example.backend.entity.User;
@@ -46,16 +47,16 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsByUsername(signUpRequest.getUsername())) {
-           return ResponseEntity.badRequest().body("Username is already in use");
+           return ResponseEntity.badRequest().body(new MessageResponse("Username is already in use"));
         }
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body("Email is already in use");
+            return ResponseEntity.badRequest().body(new MessageResponse("Email is already in use"));
         }
         User user = new User(signUpRequest.getEmail(),
                 signUpRequest.getUsername(),
                 passwordEncoder.encode(signUpRequest.getPassword()));
         userRepository.save(user);
-        return ResponseEntity.ok().body("User registered successfully");
+        return ResponseEntity.ok().body(new MessageResponse("User registered successfully"));
     }
 
     @PostMapping("/login")
@@ -86,17 +87,17 @@ public class AuthenticationController {
         String requestRefreshToken = request.getRefreshToken();
         Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByToken(requestRefreshToken);
         if(refreshTokenOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Refresh token not found");
+            return ResponseEntity.badRequest().body(new MessageResponse("Refresh token not found"));
         }
         RefreshToken refreshToken = refreshTokenOpt.get();
         if(refreshToken.isExpired()){
             refreshTokenRepository.delete(refreshToken);
-            return ResponseEntity.badRequest().body("Refresh token expired");
+            return ResponseEntity.badRequest().body(new MessageResponse("Refresh token expired"));
         }
         if (!refreshToken.isValid()) {
                  refreshTokenRepository.delete(refreshToken);
                  return ResponseEntity.badRequest()
-                     .body("Refresh token is invalid");
+                     .body(new MessageResponse("Refresh token is invalid"));
         }
 
         User user = refreshToken.getUser();
@@ -111,6 +112,6 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(@RequestBody LogoutRequest logoutRequest) {
         refreshTokenRepository.deleteByToken(logoutRequest.getRefreshToken());
-        return ResponseEntity.ok("Log out successful!");
+        return ResponseEntity.ok(new MessageResponse("Log out successful!"));
     }
 }
