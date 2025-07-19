@@ -25,6 +25,9 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private List<UserVocabulary> userList;
+
     public User(String email, String username, String password) {
         this.email = email;
         this.username = username;
