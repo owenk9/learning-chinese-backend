@@ -1,9 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.request.LoginRequest;
-import com.example.backend.dto.request.LogoutRequest;
-import com.example.backend.dto.request.SignUpRequest;
-import com.example.backend.dto.request.TokenRefreshRequest;
+import com.example.backend.dto.request.*;
 import com.example.backend.dto.response.JwtResponse;
 import com.example.backend.dto.response.MessageResponse;
 import com.example.backend.dto.response.TokenRefreshResponse;
@@ -13,10 +10,9 @@ import com.example.backend.repository.RefreshTokenRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.security.UserPrincipal;
 import com.example.backend.security.jwt.JwtUtil;
+import com.example.backend.service.AuthService;
+import com.example.backend.service.EmailService;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +39,8 @@ public class AuthenticationController {
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
@@ -113,5 +111,15 @@ public class AuthenticationController {
     public ResponseEntity<?> logoutUser(@RequestBody LogoutRequest logoutRequest) {
         refreshTokenRepository.deleteByToken(logoutRequest.getRefreshToken());
         return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        return authService.handleForgotPassword(request);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return authService.handleResetPassword(request);
     }
 }

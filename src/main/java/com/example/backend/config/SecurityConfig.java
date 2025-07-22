@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import com.example.backend.security.CustomOauth2UserService;
 import com.example.backend.security.CustomUserDetailsService;
 import com.example.backend.security.jwt.JwtAuthenticationFilter;
 import lombok.AccessLevel;
@@ -31,14 +32,23 @@ public class SecurityConfig{
     CustomUserDetailsService customUserDetailsService;
     @Autowired
     JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private CustomOauth2UserService customOAuth2UserService;
+    @Autowired
+    private Oauth2AuthenticationSuccessHandler successHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**", "/user-vocabulary/**").permitAll()
+                        .requestMatchers("/auth/**","/oauth2/**", "/public/**", "/user-vocabulary/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(successHandler)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
