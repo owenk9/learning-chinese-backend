@@ -1,5 +1,7 @@
 package com.example.backend.dto.request;
 
+import com.example.backend.validator.ValidEmail;
+import com.example.backend.validator.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -16,10 +18,11 @@ public class SignUpRequest {
 
     @NotBlank
     @Size(max = 50)
-    @Email
+    @ValidEmail
     private String email;
 
     @NotBlank
     @Size(min = 6, max = 20)
+    @ValidPassword
     private String password;
 }

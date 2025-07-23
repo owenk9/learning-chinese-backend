@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 @Service
 public class GoogleOauth2 {
-    @Value("${google.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
 
     public GoogleIdToken.Payload verifyGoogleToken(String token) {
