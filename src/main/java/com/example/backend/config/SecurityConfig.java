@@ -1,11 +1,7 @@
 package com.example.backend.config;
 
-import com.example.backend.security.CustomOauth2UserService;
 import com.example.backend.security.CustomUserDetailsService;
 import com.example.backend.security.jwt.JwtAuthenticationFilter;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,10 +28,10 @@ public class SecurityConfig{
     CustomUserDetailsService customUserDetailsService;
     @Autowired
     JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private CustomOauth2UserService customOAuth2UserService;
-    @Autowired
-    private Oauth2AuthenticationSuccessHandler successHandler;
+//    @Autowired
+//    private CustomOauth2UserService customOAuth2UserService;
+//    @Autowired
+//    private Oauth2AuthenticationSuccessHandler successHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,15 +39,12 @@ public class SecurityConfig{
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/oauth2/**", "/public/**", "/user-vocabulary/**").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**", "/public/**").permitAll()
                         .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth -> oauth
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(successHandler)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

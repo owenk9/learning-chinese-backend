@@ -8,10 +8,10 @@ import com.example.backend.entity.RefreshToken;
 import com.example.backend.entity.User;
 import com.example.backend.repository.RefreshTokenRepository;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.security.GoogleOauth2;
 import com.example.backend.security.UserPrincipal;
 import com.example.backend.security.jwt.JwtUtil;
 import com.example.backend.service.AuthService;
-import com.example.backend.service.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +41,8 @@ public class AuthenticationController {
     JwtUtil jwtUtil;
     @Autowired
     AuthService authService;
+    @Autowired
+    GoogleOauth2 googleOauth2;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
@@ -122,4 +124,5 @@ public class AuthenticationController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         return authService.handleResetPassword(request);
     }
+
 }

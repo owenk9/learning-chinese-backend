@@ -7,4 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface AuthService {
     ResponseEntity<?> handleForgotPassword(ForgotPasswordRequest request);
     ResponseEntity<?> handleResetPassword(ResetPasswordRequest request);
+    ResponseEntity<?> handleGoogleLogin(String googleToken);
 }
